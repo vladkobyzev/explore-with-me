@@ -7,15 +7,15 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - stats-service
+      - stats-server
     environment:
-      - EWM_STATS_SERVER_URL=http://stats-service:9091
+      - EWM_STATS_SERVER_URL=http://stats-server:9091
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5555
 
-  stats-service:
-    build: stats/stats-service/
-    image: stats-service-image
-    container_name: stats-service
+  stats-server:
+    build: stats/stats-server/
+    image: stats-server-image
+    container_name: stats-server
     ports:
         - "9091:9091"
         - "5555:8888"

@@ -24,16 +24,17 @@ public class StatClient extends BaseClient {
                         .build()
         );
     }
+
     public ResponseEntity<Object> saveStat(HitDto hitDto) {
         return post("/hit", hitDto);
     }
 
-    public ResponseEntity<Object> getStat(String start,String end,String[] uris, Boolean unique) {
+    public ResponseEntity<Object> getStat(String start, String end, String[] uris, Boolean unique) {
         StringBuilder pathBuilder = new StringBuilder("/stats");
         Map<String, Object> parameters = new HashMap<>();
-            pathBuilder.append("?start={start}&end={end}");
-            parameters.put("start", start);
-            parameters.put("end", end);
+        pathBuilder.append("?start={start}&end={end}");
+        parameters.put("start", start);
+        parameters.put("end", end);
 
         if (uris != null) {
             pathBuilder.append("&uris={uris}");
