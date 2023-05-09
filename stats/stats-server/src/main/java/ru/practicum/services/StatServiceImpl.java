@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class StatServiceImpl implements StatService{
+public class StatServiceImpl implements StatService {
     private final ModelMapper mapper;
     private final StatRepository repository;
 
