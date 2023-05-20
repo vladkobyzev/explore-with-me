@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-public class StatController {
+public class StatServerController {
     private final StatService statService;
 
     @PostMapping("/hit")
