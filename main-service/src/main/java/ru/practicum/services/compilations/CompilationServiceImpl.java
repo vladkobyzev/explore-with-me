@@ -15,6 +15,7 @@ import ru.practicum.repositories.CompilationRepository;
 import ru.practicum.services.events.EventService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -50,13 +51,14 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getAllCompilations(boolean pinned, Integer from, Integer size) {
+        List<Compilation> compilations;
         if(pinned) {
-            compilationRepository.findAllByPinned(true);
+            compilations = compilationRepository.findAllByPinned(true);
         } else {
             PageRequest pageRequest = PageRequest.of(from / size, size);
-            compilationRepository.findAll(pageRequest);
+            compilations = compilationRepository.findAll(pageRequest).toList();
         }
-        return null;
+        return compilations.stream().map(this::convertEntityToDto).collect(Collectors.toList());
     }
 
     @Override

@@ -22,13 +22,9 @@ public class AdminCategoryController {
     }
 
     @DeleteMapping("/{catId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable long catId) {
-        boolean isss = categoryService.existsById(catId);
-        if(!categoryService.existsById(catId)) {
-            return ResponseEntity.noContent().build();
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable long catId) {
         categoryService.deleteCategory(catId);
-        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{catId}")

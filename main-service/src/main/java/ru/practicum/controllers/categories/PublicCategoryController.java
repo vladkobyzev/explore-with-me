@@ -14,8 +14,8 @@ public class PublicCategoryController {
     private final CategoryService categoryService;
 
     @GetMapping()
-    public List<CategoryDto> getAllCategories(@RequestParam(name = "from", required = false) Integer from,
-                                              @RequestParam(name = "size", required = false) Integer size) {
+    public List<CategoryDto> getAllCategories(@RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return categoryService.getAllCategories(from, size);
     }
 

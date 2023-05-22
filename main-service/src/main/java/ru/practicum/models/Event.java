@@ -33,24 +33,24 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "initiator_id", referencedColumnName = "id")
     private User initiator;
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
     private Location location;
     @Column(name = "paid")
     private Boolean paid;
     @Column(name = "participant_limit")
-    private int participantLimit;
+    private Integer participantLimit;
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private EventStatus state = EventStatus.PENDING;
     @Column(name = "title")
     private String title;
     @Column(name = "views")
-    private int views;
+    private Integer views;
 
     public void incrementConfirmedRequests() {
         this.confirmedRequests++;

@@ -2,23 +2,25 @@ package ru.practicum.services.events;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.events.*;
 import ru.practicum.exceptions.Conflict;
 import ru.practicum.exceptions.EntityNotFound;
+import ru.practicum.models.Category;
 import ru.practicum.models.Event;
 import ru.practicum.models.User;
 import ru.practicum.repositories.EventRepository;
 import ru.practicum.repositories.LocationRepository;
 import ru.practicum.services.categories.CategoryService;
 import ru.practicum.services.users.UserService;
-import ru.practicum.util.EventStateAction;
+import ru.practicum.util.EventStateActionAdmin;
+import ru.practicum.util.EventStateActionUser;
 import ru.practicum.util.EventStatus;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,17 +69,22 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public EventFullDto updateEventByUserIdPrivate(long userId, long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
+    public EventFullDto updateEventByUserIdPrivate(long userId, long eventId, UpdateEventUserRequest updateEventUserRequest) {
         User user = userService.getUserById(userId);
         Event event = eventRepository.findByIdAndInitiator(eventId, user).orElseThrow(() ->
                 new EntityNotFound("Event with id=" + eventId + " was not found"));
         if (event.getState() != EventStatus.CANCELED && event.getState() != EventStatus.PENDING) {
             throw new Conflict("Event can only be modified if it is canceled or in moderation state");
         }
-        if (updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+        if (updateEventUserRequest.getEventDate() != null && updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new Conflict("Event date and time cannot be earlier than two hours from now");
         }
-        BeanUtils.copyProperties(updateEventAdminRequest, event);
+        modelMapper.map(updateEventUserRequest, event);
+        if (updateEventUserRequest.getStateAction().equals(EventStateActionUser.CANCEL_REVIEW)) {
+            event.setState(EventStatus.CANCELED);
+        } else if (updateEventUserRequest.getStateAction().equals(EventStateActionUser.SEND_TO_REVIEW)) {
+            event.setState(EventStatus.PENDING);
+        }
         return convertEntityToDto(eventRepository.save(event));
     }
 
@@ -88,9 +95,12 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventFullDto> getAllEventsAdmin(List<Long> users, List<String> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> getAllEventsAdmin(List<Long> usersIds, List<String> states, List<Long> categoriesIds, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
-        List<Event> events = eventRepository.findAllEventsAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest);
+        List<User> users = (usersIds == null)  ? null :userService.getUsersIn(usersIds);
+        List<Category> categories = (categoriesIds == null) ? null : categoryService.getAllCategoriesIn(categoriesIds);
+        List<EventStatus> eventStatuses = (states == null) ? null :states.stream().map(EventStatus::valueOf).collect(Collectors.toList());
+        List<Event> events = eventRepository.findAllEventsAdmin(users, eventStatuses, categories, rangeStart, rangeEnd, pageRequest);
         return events.stream()
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toList());
@@ -99,18 +109,22 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, long eventId) {
         Event event = getEventById(eventId);
-        if (updateEventAdminRequest.getEventDate() != null && event.getPublishedOn() != null) {
-            if (updateEventAdminRequest.getEventDate().isBefore(event.getPublishedOn().plusHours(1))) {
+            if (updateEventAdminRequest.getEventDate() != null && updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new Conflict("The start date of the event to be modified must be no earlier than an hour from the date of publication");
             }
-        }
-        if (updateEventAdminRequest.getStateAction().equals(EventStateAction.CANCEL_REVIEW) && event.getState().equals(EventStatus.PUBLISHED)) {
+
+        if (updateEventAdminRequest.getStateAction().equals(EventStateActionAdmin.REJECT_EVENT) && event.getState().equals(EventStatus.PUBLISHED)) {
             throw new Conflict("An event can be rejected only if it has not been published yet");
         }
-        BeanUtils.copyProperties(updateEventAdminRequest, event);
         if (!event.getState().equals(EventStatus.PENDING)) {
             throw new Conflict("You can only change canceled events or events in the state of waiting for moderation");
-
+        }
+        modelMapper.map(updateEventAdminRequest, event);
+        if (updateEventAdminRequest.getStateAction().equals(EventStateActionAdmin.PUBLISH_EVENT)) {
+            event.setState(EventStatus.PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        } else if (updateEventAdminRequest.getStateAction().equals(EventStateActionAdmin.REJECT_EVENT)) {
+            event.setState(EventStatus.CANCELED);
         }
         return convertEntityToDto(eventRepository.save(event));
     }

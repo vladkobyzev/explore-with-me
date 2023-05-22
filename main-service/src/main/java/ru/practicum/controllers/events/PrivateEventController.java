@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.events.*;
 import ru.practicum.dto.requests.ParticipationRequestDto;
+import ru.practicum.exceptions.Conflict;
 import ru.practicum.exceptions.Forbidden;
 import ru.practicum.services.events.EventService;
 import ru.practicum.services.requests.RequestService;
@@ -22,8 +23,8 @@ public class PrivateEventController {
 
     @GetMapping
     public List<EventShortDto> getUserEventsPrivate(@PathVariable long userId,
-                                                    @RequestParam(name = "from", required = false) Integer from,
-                                                    @RequestParam(name = "size", required = false) Integer size) {
+                                                    @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                    @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return eventService.getUserEventsPrivate(userId, from, size);
     }
 
@@ -31,7 +32,7 @@ public class PrivateEventController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto addEventPrivate(@Valid @RequestBody NewEventDto newEventDto, @PathVariable long userId) {
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new Forbidden("Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: " +
+            throw new Conflict("Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: " +
                     newEventDto.getEventDate());
         }
         return eventService.addEventPrivate(newEventDto, userId);
@@ -46,8 +47,8 @@ public class PrivateEventController {
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByUserIdPrivate(@PathVariable long userId,
                                                    @PathVariable long eventId,
-                                                   @Valid @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
-        return eventService.updateEventByUserIdPrivate(userId, eventId, updateEventAdminRequest);
+                                                   @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {
+        return eventService.updateEventByUserIdPrivate(userId, eventId, updateEventUserRequest);
     }
 
     @GetMapping("/{eventId}/requests")
@@ -58,7 +59,7 @@ public class PrivateEventController {
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateStatusRequest(@PathVariable long userId,
-                                                  @PathVariable long eventId, @Valid @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
-        return requestService.updateStatusEventByUserId(userId, eventId, eventRequestStatusUpdateRequest);
+                                                  @PathVariable long eventId, @Valid @RequestBody(required = false) EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+        return requestService.updateStatusRequestsByUserId(userId, eventId, eventRequestStatusUpdateRequest);
     }
 }

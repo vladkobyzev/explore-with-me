@@ -27,11 +27,11 @@ public class EventFullDto {
     private Location location;
     @NotNull
     private Boolean paid;
-    private int participantLimit;
+    private Integer participantLimit;
     private LocalDateTime publishedOn;
-    private boolean requestModeration;
+    private Boolean requestModeration;
     private EventStatus state;
     @NotBlank
     private String title;
-    private int views;
+    private Integer views;
 }

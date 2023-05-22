@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.categories.NewCategoryDto;
-import ru.practicum.exceptions.Conflict;
 import ru.practicum.exceptions.EntityNotFound;
 import ru.practicum.models.Category;
 import ru.practicum.repositories.CategoryRepository;
@@ -55,7 +54,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategoryDtoById(long catId) {
         return convertEntityToDto(getCategoryById(catId));
     }
-
+    @Override
+    public List<Category> getAllCategoriesIn(List<Long> ids) {
+        return categoryRepository.findAllByIdIn(ids);
+    }
     @Override
     public Category getCategoryById(long catId) {
         return categoryRepository.findById(catId).orElseThrow(() ->

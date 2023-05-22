@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByIdIn(List<Long> ids, PageRequest pageRequest);
+    List<User> findAllByIdIn(List<Long> ids);
 }

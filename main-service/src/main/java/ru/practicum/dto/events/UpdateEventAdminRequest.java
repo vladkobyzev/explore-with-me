@@ -1,23 +1,24 @@
 package ru.practicum.dto.events;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import ru.practicum.dto.categories.CategoryDto;
-import ru.practicum.dto.events.Location;
-import ru.practicum.util.EventStateAction;
+import ru.practicum.util.EventStateActionAdmin;
 
 import java.time.LocalDateTime;
 @Data
 public class UpdateEventAdminRequest {
     private String annotation;
 
-    private CategoryDto category;
+    private int category;
     private String description;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime eventDate;
     private Location location;
-    private boolean paid;
-    private int participantLimit;
+    private Boolean paid;
+    private Integer participantLimit;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime publishedOn;
-    private boolean requestModeration;
-    private EventStateAction stateAction;
+    private Boolean requestModeration;
+    private EventStateActionAdmin stateAction;
     private String title;
 }
