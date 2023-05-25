@@ -19,7 +19,5 @@ public interface CategoryService {
 
     CategoryDto getCategoryDtoById(long catId);
 
-    List<Category> getAllCategoriesIn(List<Long> ids);
-
     Category getCategoryById(long catId);
 }

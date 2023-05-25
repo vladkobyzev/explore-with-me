@@ -1,7 +1,6 @@
 package ru.practicum.controllers.events;
 
 import lombok.AllArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventShortDto;
@@ -21,7 +20,7 @@ public class PublicEventController {
     @GetMapping()
     public List<EventShortDto> getAllEvents(@RequestParam(name = "text", required = false) String text,
                                             @RequestParam(name = "categories", required = false) List<Long> categories,
-                                            @RequestParam(name = "paid", required = false) boolean paid,
+                                            @RequestParam(name = "paid", required = false) Boolean paid,
                                             @RequestParam(value = "rangeStart", required = false) String rangeStart,
                                             @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
                                             @RequestParam(name = "onlyAvailable", defaultValue = "false") boolean onlyAvailable,

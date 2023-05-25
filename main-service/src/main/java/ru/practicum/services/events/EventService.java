@@ -11,7 +11,7 @@ public interface EventService {
 
     EventFullDto addEventPrivate(NewEventDto newEventDto, long userId);
 
-    EventFullDto getEventDtoByIdPrivate(long userId, long eventId);
+    EventFullDto getEventDtoByIdPrivate(long userId, long eventId, String ip);
 
     Event getEventById(long eventId);
 

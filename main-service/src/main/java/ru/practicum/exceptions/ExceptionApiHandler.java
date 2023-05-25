@@ -41,8 +41,8 @@ public class ExceptionApiHandler {
         return new ResponseEntity<>(apiError, status);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<ApiError> fieldValidation(MethodArgumentNotValidException e) {
+    @ExceptionHandler({MethodArgumentNotValidException.class, BadRequest.class})
+    public ResponseEntity<ApiError> fieldValidation(RuntimeException e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String reason = "Incorrectly made request.";
         String message = "Field: category. Error: must not be blank. Value: null";

@@ -1,4 +1,4 @@
-package ru.practicum.client;
+package ru.practicum;
 
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class BaseClient {
     protected final RestTemplate rest;
-
     public BaseClient(RestTemplate rest) {
         this.rest = rest;
     }

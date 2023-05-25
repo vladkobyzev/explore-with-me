@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.dto.compilations.CompilationDto;
 import ru.practicum.dto.compilations.NewCompilationDto;
 import ru.practicum.dto.compilations.UpdateCompilationRequest;
-import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.exceptions.EntityNotFound;
 import ru.practicum.models.Compilation;
-import ru.practicum.models.Event;
 import ru.practicum.repositories.CompilationRepository;
 import ru.practicum.services.events.EventService;
 
@@ -30,7 +28,6 @@ public class CompilationServiceImpl implements CompilationService {
         compilation.setEvents(eventService.getAllEventsIn(newCompilationDto.getEvents()));
         compilation.setPinned(newCompilationDto.isPinned());
         compilation.setTitle(newCompilationDto.getTitle());
-
         return convertEntityToDto(compilationRepository.save(compilation));
     }
 
@@ -52,7 +49,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getAllCompilations(boolean pinned, Integer from, Integer size) {
         List<Compilation> compilations;
-        if(pinned) {
+        if (pinned) {
             compilations = compilationRepository.findAllByPinned(true);
         } else {
             PageRequest pageRequest = PageRequest.of(from / size, size);

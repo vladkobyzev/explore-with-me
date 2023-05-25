@@ -1,6 +1,5 @@
 package ru.practicum.services.compilations;
 
-import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.compilations.CompilationDto;
 import ru.practicum.dto.compilations.NewCompilationDto;
 import ru.practicum.dto.compilations.UpdateCompilationRequest;

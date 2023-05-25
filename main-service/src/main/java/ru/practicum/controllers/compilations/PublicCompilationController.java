@@ -2,9 +2,7 @@ package ru.practicum.controllers.compilations;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.compilations.CompilationDto;
-import ru.practicum.models.Compilation;
 import ru.practicum.services.compilations.CompilationService;
 
 import java.util.List;

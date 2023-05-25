@@ -29,6 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(long catId) {
         categoryRepository.deleteById(catId);
     }
+
     @Override
     public boolean existsById(long catId) {
         return categoryRepository.existsById(catId);
@@ -49,21 +50,16 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public CategoryDto getCategoryDtoById(long catId) {
         return convertEntityToDto(getCategoryById(catId));
     }
-    @Override
-    public List<Category> getAllCategoriesIn(List<Long> ids) {
-        return categoryRepository.findAllByIdIn(ids);
-    }
+
     @Override
     public Category getCategoryById(long catId) {
         return categoryRepository.findById(catId).orElseThrow(() ->
                 new EntityNotFound("Category with id=" + catId + " was not found"));
     }
-
 
     private CategoryDto convertEntityToDto(Category category) {
         return modelMapper.map(category, CategoryDto.class);

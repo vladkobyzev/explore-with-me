@@ -24,7 +24,7 @@ public class Event {
     private Category category;
     @JoinColumn(name = "confirmed_requests")
     private int confirmedRequests;
-    @JoinColumn(name = "created_on")
+    @JoinColumn(name = "created_on", columnDefinition = "timestamp")
     private LocalDateTime createdOn;
     @JoinColumn(name = "description")
     private String description;
@@ -40,20 +40,25 @@ public class Event {
     private Boolean paid;
     @Column(name = "participant_limit")
     private Integer participantLimit;
-    @Column(name = "published_on")
+    @Column(name = "published_on", columnDefinition = "timestamp")
     private LocalDateTime publishedOn;
     @Column(name = "request_moderation")
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private EventStatus state = EventStatus.PENDING;
     @Column(name = "title")
     private String title;
     @Column(name = "views")
-    private Integer views;
+    private Integer views = 0;
 
+    @Transient
     public void incrementConfirmedRequests() {
         this.confirmedRequests++;
     }
-}
 
+    @Transient
+    public void incrementViews() {
+        this.views++;
+    }
+}

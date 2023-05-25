@@ -15,22 +15,20 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
-        List<User> users;
-        if(from == null && size == null) {
-            users = userRepository.findAllById(ids);
-        } else {
-            PageRequest pageRequest = PageRequest.of(from / size, size);
-            users = userRepository.findAllByIdIn(ids, pageRequest).toList();
-        }
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        List<User> users = userRepository.findAllByIdIn(ids, pageRequest);
+
         return users.stream()
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public User getUserById(long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
@@ -41,11 +39,6 @@ public class UserServiceImpl implements UserService{
     public UserDto addUser(NewUserRequest newUserRequest) {
         User user = convertDtoToEntity(newUserRequest);
         return convertEntityToDto(userRepository.save(user));
-    }
-
-    @Override
-    public List<User> getUsersIn(List<Long> ids) {
-        return userRepository.findAllByIdIn(ids);
     }
 
     @Override

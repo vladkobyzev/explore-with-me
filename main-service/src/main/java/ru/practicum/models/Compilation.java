@@ -2,11 +2,9 @@ package ru.practicum.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.dto.events.EventShortDto;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
