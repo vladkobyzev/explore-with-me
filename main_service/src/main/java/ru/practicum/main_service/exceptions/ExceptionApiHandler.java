@@ -49,6 +49,7 @@ public class ExceptionApiHandler {
         ApiError apiError = new ApiError(status.value(), reason, message, getTimestamp());
         return new ResponseEntity<>(apiError, status);
     }
+
     private String getTimestamp() {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         return formatter.format(ZonedDateTime.now());
