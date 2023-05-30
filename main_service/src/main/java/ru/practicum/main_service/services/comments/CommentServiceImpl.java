@@ -135,7 +135,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentShortDto convertEntityToShortDto(Comment comment) {
-        CommentShortDto commentShortDto =  modelMapper.map(comment, CommentShortDto.class);
+        CommentShortDto commentShortDto = modelMapper.map(comment, CommentShortDto.class);
         commentShortDto.setEventId(comment.getEvent().getId());
         commentShortDto.setAuthorName(comment.getAuthor().getName());
         return commentShortDto;
