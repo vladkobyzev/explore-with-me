@@ -1,10 +1,12 @@
 package ru.practicum.main_service.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,13 +27,15 @@ public class Comment {
     private User author;
     @Column(name = "modified")
     private Boolean modified = false;
-    @Column(name = "updatedDate")
+    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
     @Column(name = "rating")
     private Long rating = 0L;
+
     @ManyToOne
-    @JoinColumn(name = "parentComment", referencedColumnName = "id")
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Comment parentComment;
+
     @Column(name = "created")
     private LocalDateTime created;
 

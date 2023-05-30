@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 public class CommentShortDto {
     private Long id;
     private String text;
-    private Long event;
+    private Long eventId;
     private String authorName;
-    private Long rating = 0L;
+    private Long rating;
     private Long parentComment;
     private LocalDateTime created;
 }

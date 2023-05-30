@@ -42,6 +42,7 @@ public class CommentController {
     }
 
     @PostMapping("/{comId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public CommentFullDto replyToComment(@PathVariable long comId, @Valid @RequestBody NewCommentDto commentDto,
                                                 @PathVariable long eventId,
                                                 @RequestHeader(value = USER_ID) long userId) {

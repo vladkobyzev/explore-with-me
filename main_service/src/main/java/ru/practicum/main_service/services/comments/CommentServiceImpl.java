@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.dto.comments.CommentFullDto;
 import ru.practicum.main_service.dto.comments.CommentShortDto;
 import ru.practicum.main_service.dto.comments.NewCommentDto;
@@ -37,8 +38,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentShortDto> getAllEventComments(long eventId, String sort, Integer from, Integer size) {
+        Event event = eventService.getEventById(eventId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
-        List<Comment> comments = commentRepository.findAllComments(eventId, sort, pageRequest);
+        List<Comment> comments = commentRepository.findAllComments(event, sort, pageRequest);
         return comments.stream().map(this::convertEntityToShortDto).collect(Collectors.toList());
     }
 
@@ -46,7 +48,8 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentShortDto> getCommentReplies(long eventId, long comId, Integer from, Integer size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         eventService.getEventById(eventId);
-        List<Comment> comments = commentRepository.findAllCommentReplies(comId, pageRequest);
+        Comment comment = getCommentById(comId);
+        List<Comment> comments = commentRepository.findAllCommentReplies(comment, pageRequest);
         return comments.stream().map(this::convertEntityToShortDto).collect(Collectors.toList());
     }
 
@@ -66,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(newCommentDto.getText());
         comment.setAuthor(user);
         comment.setEvent(event);
-        comment.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        comment.setCreated(LocalDateTime.now());
         return convertEntityToFullDto(commentRepository.save(comment));
     }
 
@@ -85,11 +88,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public CommentShortDto likeComment(long eventId, long comId, long userId, boolean like) {
         eventService.getEventById(eventId);
         User user = userService.getUserById(userId);
-        Comment comment = commentRepository.findById(comId).orElseThrow(() ->
-                new EntityNotFound("Comment with id=" + comId + " was not found"));
+        Comment comment = getCommentById(comId);
         if (likeRepository.existsByCommentAndUser(comment, user) && like) {
             throw new BadRequest("Attempt to put a like on an already liked comment");
         } else if (!likeRepository.existsByCommentAndUser(comment, user) && !like) {
@@ -109,10 +112,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentFullDto updateComment(NewCommentDto commentDto, long eventId, long comId) {
+    public CommentFullDto updateComment(NewCommentDto newCommentDto, long eventId, long comId) {
         eventService.getEventById(eventId);
         Comment comment = getCommentById(comId);
-        comment.setText(comment.getText());
+        comment.setText(newCommentDto.getText());
         comment.setModified(true);
         comment.setUpdatedDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         return convertEntityToFullDto(commentRepository.save(comment));
@@ -125,10 +128,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentFullDto convertEntityToFullDto(Comment comment) {
-        return modelMapper.map(comment, CommentFullDto.class);
+        CommentFullDto commentFullDto = modelMapper.map(comment, CommentFullDto.class);
+        commentFullDto.setEventId(comment.getEvent().getId());
+        commentFullDto.setAuthorName(comment.getAuthor().getName());
+        return commentFullDto;
     }
 
     private CommentShortDto convertEntityToShortDto(Comment comment) {
-        return modelMapper.map(comment, CommentShortDto.class);
+        CommentShortDto commentShortDto =  modelMapper.map(comment, CommentShortDto.class);
+        commentShortDto.setEventId(comment.getEvent().getId());
+        commentShortDto.setAuthorName(comment.getAuthor().getName());
+        return commentShortDto;
     }
 }
