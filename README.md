@@ -11,4 +11,4 @@
 * Run the docker compose file
 
 ## Status and plans for the completion of the project
-Complete
+Add a paid subscription system to support the organizers of regular events
